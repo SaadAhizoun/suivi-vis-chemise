@@ -1,0 +1,269 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* COFICAB Industrial 4.0 Design System */
+@layer base {
+  :root {
+    /* COFICAB Brand Colors */
+    --coficab-blue: 230 100% 26%;
+    --coficab-blue-dark: 215 60% 15%;
+    --coficab-copper: 28 40% 48%;
+    --coficab-copper-light: 35 45% 55%;
+    
+    /* Core palette */
+    --background: 210 20% 97%;
+    --foreground: 220 40% 13%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 40% 13%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 40% 13%;
+
+    --primary: 230 100% 26%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 215 60% 15%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 15% 92%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 28 40% 48%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 47%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 230 100% 26%;
+
+    --radius: 0.75rem;
+
+    /* Status Colors */
+    --status-ok: 122 39% 33%;
+    --status-ok-foreground: 0 0% 100%;
+    --status-warning: 44 96% 56%;
+    --status-warning-foreground: 0 0% 10%;
+    --status-danger: 0 70% 47%;
+    --status-danger-foreground: 0 0% 100%;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(11, 31, 51, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(11, 31, 51, 0.08), 0 2px 4px -1px rgba(11, 31, 51, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(11, 31, 51, 0.1), 0 4px 6px -2px rgba(11, 31, 51, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(11, 31, 51, 0.12), 0 10px 10px -5px rgba(11, 31, 51, 0.04);
+    --shadow-card: 0 2px 8px 0 rgba(11, 31, 51, 0.06);
+    --shadow-card-hover: 0 8px 25px -5px rgba(11, 31, 51, 0.15);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(230 100% 26%) 0%, hsl(215 60% 20%) 100%);
+    --gradient-copper: linear-gradient(135deg, hsl(28 40% 48%) 0%, hsl(35 45% 55%) 100%);
+    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+    --gradient-industrial: linear-gradient(180deg, hsl(210 20% 97%) 0%, hsl(210 15% 94%) 100%);
+
+    /* Sidebar */
+    --sidebar-background: 215 60% 15%;
+    --sidebar-foreground: 210 20% 92%;
+    --sidebar-primary: 28 40% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 50% 22%;
+    --sidebar-accent-foreground: 210 20% 92%;
+    --sidebar-border: 215 40% 25%;
+    --sidebar-ring: 28 40% 48%;
+  }
+
+  .dark {
+    --background: 220 40% 8%;
+    --foreground: 210 20% 95%;
+
+    --card: 220 35% 12%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 220 35% 12%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 28 40% 55%;
+    --primary-foreground: 220 40% 8%;
+
+    --secondary: 215 40% 20%;
+    --secondary-foreground: 210 20% 95%;
+
+    --muted: 215 30% 18%;
+    --muted-foreground: 215 20% 60%;
+
+    --accent: 28 40% 48%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 215 30% 20%;
+    --input: 215 30% 20%;
+    --ring: 28 40% 55%;
+
+    --sidebar-background: 220 40% 6%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: 28 40% 55%;
+    --sidebar-primary-foreground: 220 40% 8%;
+    --sidebar-accent: 215 35% 15%;
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 215 30% 15%;
+    --sidebar-ring: 28 40% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter antialiased;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Industrial Card Styles */
+  .card-industrial {
+    @apply bg-card rounded-xl border border-border/50 shadow-[var(--shadow-card)] 
+           transition-all duration-300 hover:shadow-[var(--shadow-card-hover)];
+  }
+
+  .card-glass {
+    @apply bg-white/80 backdrop-blur-sm rounded-xl border border-white/50 
+           shadow-[var(--shadow-card)];
+  }
+
+  /* Status Badge Styles */
+  .status-ok {
+    @apply bg-[hsl(var(--status-ok))] text-[hsl(var(--status-ok-foreground))];
+  }
+
+  .status-warning {
+    @apply bg-[hsl(var(--status-warning))] text-[hsl(var(--status-warning-foreground))];
+  }
+
+  .status-danger {
+    @apply bg-[hsl(var(--status-danger))] text-[hsl(var(--status-danger-foreground))];
+  }
+
+  /* Gradient Text */
+  .text-gradient-copper {
+    @apply bg-gradient-to-r from-[hsl(var(--coficab-copper))] to-[hsl(var(--coficab-copper-light))] 
+           bg-clip-text text-transparent;
+  }
+
+  /* Industrial Button */
+  .btn-industrial {
+    @apply bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] 
+           px-6 py-3 rounded-lg font-semibold shadow-[var(--shadow-md)]
+           transition-all duration-200 hover:shadow-[var(--shadow-lg)] 
+           hover:translate-y-[-1px] active:translate-y-0;
+  }
+
+  .btn-copper {
+    @apply bg-gradient-to-r from-[hsl(var(--coficab-copper))] to-[hsl(var(--coficab-copper-light))]
+           text-white px-6 py-3 rounded-lg font-semibold shadow-[var(--shadow-md)]
+           transition-all duration-200 hover:shadow-[var(--shadow-lg)]
+           hover:translate-y-[-1px] active:translate-y-0;
+  }
+
+  /* Table Industrial */
+  .table-industrial {
+    @apply w-full rounded-xl overflow-hidden;
+  }
+
+  .table-industrial th {
+    @apply bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] 
+           px-4 py-3 text-left font-semibold text-sm;
+  }
+
+  .table-industrial td {
+    @apply px-4 py-3 border-b border-border/50 text-sm;
+  }
+
+  .table-industrial tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .table-industrial tbody tr {
+    @apply transition-colors duration-150 hover:bg-muted/50;
+  }
+}
+
+@layer utilities {
+  /* Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out both;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out both;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out both;
+  }
+
+  .animate-pulse-soft {
+    animation: pulseSoft 2s infinite;
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes pulseSoft {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  /* Stagger animations */
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+  .stagger-5 { animation-delay: 0.5s; }
+}
