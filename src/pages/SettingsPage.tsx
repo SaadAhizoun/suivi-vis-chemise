@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { defaultFormulas, initialLines } from '@/data/mockData';
-import { Line, WearFormulas, generateLineId, generateLineName, LineDefinition } from '@/types/maintenance';
+import { Line, WearFormulas, LineDefinition } from '@/types/maintenance';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,11 +25,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { 
-  Settings, 
-  Plus, 
-  Trash2, 
-  Power, 
+import {
+  Settings,
+  Plus,
+  Trash2,
   Calculator,
   Save,
   RefreshCw,
@@ -48,14 +47,36 @@ export default function SettingsPage() {
   const [lines, setLines] = useState<Line[]>(initialLines);
   const [formulas, setFormulas] = useState<WearFormulas>(defaultFormulas);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  
-  // New line form state
-  const [newLineNumber, setNewLineNumber] = useState<string>('');
+
+  // New line form state (TEXT)
+  const [newLineName, setNewLineName] = useState<string>(''); // ex: "22" or "batterie" or "ligne silicone"
   const [newLineBrand, setNewLineBrand] = useState<string>('');
   const [newVisPDimensions, setNewVisPDimensions] = useState<string>('');
   const [newVisPReference, setNewVisPReference] = useState<string>('');
   const [newVisSDimensions, setNewVisSDimensions] = useState<string>('');
   const [newVisSReference, setNewVisSReference] = useState<string>('');
+
+  // Helper: clean text to generate stable id (handles spaces + accents)
+  const slugify = (input: string) => {
+    return input
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')   // remove accents
+      .replace(/[^a-z0-9]+/g, '_')       // anything non-alphanumeric -> _
+      .replace(/^_+|_+$/g, '');          // trim underscores
+  };
+
+  const makeLineIdFromName = (name: string) => `line_${slugify(name)}`;
+
+  const formatDisplayName = (raw: string) => {
+    const t = raw.trim();
+    if (!t) return '';
+    // If user already wrote "ligne ...", keep it as is
+    if (t.toLowerCase().startsWith('ligne ')) return t;
+    // Otherwise prefix "Ligne "
+    return `Ligne ${t}`;
+  };
 
   const handleFormulaChange = (field: keyof WearFormulas, value: string) => {
     const numValue = parseFloat(value) || 0;
@@ -78,7 +99,7 @@ export default function SettingsPage() {
   };
 
   const handleToggleLine = (lineId: string) => {
-    setLines(prev => prev.map(line => 
+    setLines(prev => prev.map(line =>
       line.id === lineId ? { ...line, isActive: !line.isActive } : line
     ));
     const line = lines.find(l => l.id === lineId);
@@ -89,7 +110,7 @@ export default function SettingsPage() {
   };
 
   const resetAddForm = () => {
-    setNewLineNumber('');
+    setNewLineName('');
     setNewLineBrand('');
     setNewVisPDimensions('');
     setNewVisPReference('');
@@ -98,17 +119,19 @@ export default function SettingsPage() {
   };
 
   const handleAddLine = () => {
-    const num = parseInt(newLineNumber);
-    if (isNaN(num) || num < 1 || num > 16) {
+    const rawName = newLineName.trim();
+
+    if (!rawName) {
       toast({
         title: "Erreur",
-        description: "Numéro de ligne invalide (1-16 uniquement)",
+        description: "Veuillez saisir un nom de ligne (ex: silicone, batterie, 22...)",
         variant: "destructive",
       });
       return;
     }
 
-    const lineId = generateLineId(num);
+    const lineId = makeLineIdFromName(rawName);
+
     if (lines.some(l => l.id === lineId)) {
       toast({
         title: "Erreur",
@@ -132,7 +155,7 @@ export default function SettingsPage() {
 
     const newLine: Line = {
       id: lineId,
-      name: generateLineName(num),
+      name: formatDisplayName(rawName),
       isActive: true,
       definition,
       principaleStatus: null,
@@ -275,33 +298,37 @@ export default function SettingsPage() {
                 {activeLines} actives • {inactiveLines} inactives • {lines.length} total
               </p>
             </div>
-            <Dialog open={isAddDialogOpen} onOpenChange={(open) => { setIsAddDialogOpen(open); if (!open) resetAddForm(); }}>
+
+            <Dialog
+              open={isAddDialogOpen}
+              onOpenChange={(open) => { setIsAddDialogOpen(open); if (!open) resetAddForm(); }}
+            >
               <DialogTrigger asChild>
                 <Button variant="secondary" size="sm">
                   <Plus className="h-4 w-4 mr-2" />
                   Ajouter une ligne
                 </Button>
               </DialogTrigger>
+
               <DialogContent className="max-w-lg">
                 <DialogHeader>
                   <DialogTitle>Ajouter une nouvelle ligne</DialogTitle>
                 </DialogHeader>
+
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label>Numéro de ligne (1-16) *</Label>
+                    <Label>Nom de ligne *</Label>
                     <Input
-                      type="number"
-                      min="1"
-                      max="16"
-                      placeholder="Ex: 17"
-                      value={newLineNumber}
-                      onChange={(e) => setNewLineNumber(e.target.value)}
+                      type="text"
+                      placeholder="Ex: silicone, batterie, ligne 22, 22..."
+                      value={newLineName}
+                      onChange={(e) => setNewLineName(e.target.value)}
                     />
                     <p className="text-xs text-muted-foreground">
-                      Sera affiché comme : Line {newLineNumber.padStart(2, '0') || 'XX'}
+                      Sera affiché comme : {newLineName.trim() ? formatDisplayName(newLineName) : 'Ligne XX'}
                     </p>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label>Marque / Fabricant</Label>
                     <Input
@@ -355,6 +382,7 @@ export default function SettingsPage() {
                     </div>
                   </div>
                 </div>
+
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                     Annuler
@@ -368,6 +396,7 @@ export default function SettingsPage() {
             </Dialog>
           </div>
         </CardHeader>
+
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -393,9 +422,10 @@ export default function SettingsPage() {
                   </th>
                 </tr>
               </thead>
+
               <tbody className="divide-y divide-border/50">
                 {lines.map((line, index) => (
-                  <tr 
+                  <tr
                     key={line.id}
                     className={cn(
                       "transition-colors hover:bg-muted/30 opacity-0 animate-fade-in",
@@ -411,11 +441,13 @@ export default function SettingsPage() {
                         {line.name}
                       </span>
                     </td>
+
                     <td className="px-4 py-4 hidden md:table-cell">
                       <span className="text-sm text-muted-foreground">
                         {line.definition?.brand || '—'}
                       </span>
                     </td>
+
                     <td className="px-4 py-4 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <Switch
@@ -430,6 +462,7 @@ export default function SettingsPage() {
                         </span>
                       </div>
                     </td>
+
                     <td className="px-4 py-4 text-center">
                       {line.principaleStatus ? (
                         <span className={cn(
@@ -438,13 +471,14 @@ export default function SettingsPage() {
                           line.principaleStatus === 'a_commander' && "bg-status-warning/10 text-status-warning",
                           line.principaleStatus === 'a_changer' && "bg-status-danger/10 text-status-danger",
                         )}>
-                          {line.principaleStatus === 'ok' ? 'OK' : 
-                           line.principaleStatus === 'a_commander' ? 'À cmd' : 'À chg'}
+                          {line.principaleStatus === 'ok' ? 'OK' :
+                            line.principaleStatus === 'a_commander' ? 'À cmd' : 'À chg'}
                         </span>
                       ) : (
                         <span className="text-muted-foreground text-sm">—</span>
                       )}
                     </td>
+
                     <td className="px-4 py-4 text-center">
                       {line.secondaireStatus ? (
                         <span className={cn(
@@ -453,13 +487,14 @@ export default function SettingsPage() {
                           line.secondaireStatus === 'a_commander' && "bg-status-warning/10 text-status-warning",
                           line.secondaireStatus === 'a_changer' && "bg-status-danger/10 text-status-danger",
                         )}>
-                          {line.secondaireStatus === 'ok' ? 'OK' : 
-                           line.secondaireStatus === 'a_commander' ? 'À cmd' : 'À chg'}
+                          {line.secondaireStatus === 'ok' ? 'OK' :
+                            line.secondaireStatus === 'a_commander' ? 'À cmd' : 'À chg'}
                         </span>
                       ) : (
                         <span className="text-muted-foreground text-sm">—</span>
                       )}
                     </td>
+
                     <td className="px-4 py-4 text-center">
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
